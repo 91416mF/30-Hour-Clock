@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>30 時制時鐘</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Ubuntu+Sans:wdth,wght@75..100,500..600&family=Noto+Sans+TC:wght@400;500&family=Noto+Sans+SC:wght@400;500&family=Noto+Sans+JP:wght@400;500&family=Noto+Sans+KR:wght@400;500&family=Noto+Sans+Arabic:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#EDF0F4;--surface:#FFFFFF;--ink:#101828;--sub:#516070;--line:#CBD3DD;--night:#DDE0FA;--nightink:#2B2F9E;--sig:#D92D3A;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#0D1117;--surface:#151B24;--ink:#E8ECF2;--sub:#9AA7B6;--line:#2A3441;--night:#232766;--nightink:#A9AEFF;--sig:#FF6B76}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#0D1117;--surface:#151B24;--ink:#E8ECF2;--sub:#9AA7B6;--line:#2A3441;--night:#232766;--nightink:#A9AEFF;--sig:#FF6B76}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;line-height:1.7}
+:lang(zh-Hans) body,body:lang(zh-Hans){font-family:"Noto Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif}
+body:lang(ja){font-family:"Noto Sans JP","Hiragino Sans","Yu Gothic",system-ui,sans-serif}
+body:lang(ko){font-family:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif}
+body:lang(ar){font-family:"Noto Sans Arabic","Segoe UI",Tahoma,system-ui,sans-serif}
+:lang(ru) body,:lang(de) body,:lang(en) body,body:lang(ru),body:lang(de),body:lang(en),body:lang(id),body:lang(fr),body:lang(pl),body:lang(la){font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+main{max-width:520px;margin:0 auto;padding:24px 20px 48px}
+h1{font-size:20px;font-weight:500;margin:0 0 4px}
+.lead{color:var(--sub);font-size:14px;margin:0 0 16px}
+.ctl{display:flex;gap:10px;margin:0 0 20px}
+select{flex:1;min-width:0;height:40px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);font:inherit;font-size:14px;padding:0 8px}
+select:focus-visible,input:focus-visible,#theme:focus-visible{outline:2px solid var(--nightink);outline-offset:1px}
+#theme{flex:0 0 40px;height:40px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);font-size:18px;line-height:1;cursor:pointer;padding:0}
+.dial{display:block;width:100%;max-width:400px;margin:0 auto}
+.num,.dn{font-family:"Ubuntu Sans",system-ui,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;font-variant-numeric:tabular-nums}
+.dn{font-stretch:75%;font-variation-settings:"wdth" 75}
+.read{text-align:center;margin:8px 0 0}
+.day{font-size:14px;color:var(--sub)}
+.big{font-size:clamp(40px,13vw,64px);line-height:1.1;font-weight:600;letter-spacing:0;direction:ltr;unicode-bidi:isolate}
+.real{font-size:14px;color:var(--sub)}
+.bar{height:8px;background:var(--line);border-radius:4px;overflow:hidden;margin:20px 0 6px}
+.bar i{display:block;height:100%;width:0;background:var(--nightink)}
+.ends{display:flex;justify-content:space-between;font-size:12px;color:var(--sub)}
+section{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;margin-top:28px}
+h2{font-size:16px;font-weight:500;margin:0 0 12px}
+.row{display:flex;gap:10px;align-items:center;margin:0 0 10px}
+.row label{flex:0 0 110px;font-size:14px;color:var(--sub)}
+input{flex:1;min-width:0;height:40px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:inherit;padding:0 10px}
+.out{font-size:15px;min-height:26px;margin:0 0 14px}
+.err{color:var(--sig)}
+#in30,#inReal{direction:ltr}
+p.note{font-size:14px;color:var(--sub);margin:0}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<main>
+<h1 data-i="title">30 時制時鐘</h1>
+<p class="lead" data-i="lead"></p>
+<div class="ctl">
+<button id="theme" type="button"></button>
+<select id="lang">
+<option value="zh">繁體中文</option>
+<option value="cn">简体中文</option>
+<option value="en">English</option>
+<option value="ru">Русский</option>
+<option value="de">Deutsch</option>
+<option value="ja">日本語</option>
+<option value="ko">한국어</option>
+<option value="id">Bahasa Indonesia</option>
+<option value="fr">Français</option>
+<option value="pl">Polski</option>
+<option value="la">Latina</option>
+<option value="ar">العربية</option>
+</select>
+<select id="tz">
+<option value="" data-i="local"></option>
+
+</select>
+</div>
+
+<div id="vClock">
+<svg class="dial" viewBox="0 0 300 300" role="img">
+<circle cx="150" cy="150" r="146" fill="var(--surface)" stroke="var(--line)" stroke-width="1"/>
+<path id="night" fill="none" stroke="var(--night)" stroke-width="24" d=""/>
+<g id="ticks"></g>
+<line id="hH" x1="150" y1="150" x2="150" y2="88" stroke="var(--ink)" stroke-width="5" stroke-linecap="round"/>
+<line id="hM" x1="150" y1="150" x2="150" y2="52" stroke="var(--ink)" stroke-width="3" stroke-linecap="round"/>
+<line id="hS" x1="150" y1="164" x2="150" y2="44" stroke="var(--sig)" stroke-width="1.5" stroke-linecap="round"/>
+<circle cx="150" cy="150" r="5" fill="var(--sig)"/>
+</svg>
+
+<div class="read">
+<div class="day" id="day"></div>
+<div class="big num" id="big">24:00:00</div>
+<div class="real" id="real"></div>
+</div>
+<div class="bar" aria-hidden="true"><i id="bar"></i></div>
+<div class="ends"><span data-i="start"></span><span data-i="end"></span></div>
+</div>
+
+<section>
+<h2 data-i="h2"></h2>
+<div class="row"><label for="inReal" data-i="lReal"></label><input id="inReal" type="time"></div>
+<p class="out" id="out1"></p>
+<div class="row"><label for="in30" data-i="l30"></label><input id="in30" type="text" inputmode="numeric" placeholder="26:15" autocomplete="off"></div>
+<p class="out" id="out2"></p>
+<p class="note" data-i="note"></p>
+</section>
+</main>
+
+<script>
+function p(n){return(n<10?"0":"")+n}
+function hms(z){return p(z.hour)+":"+p(z.minute)+":"+p(z.second)}
+var T={
+zh:{lc:"zh-Hant",title:"30 時制時鐘",lead:"日本常見的深夜寫法：凌晨 0–5 點寫成 24–29 點，仍算前一天。",aria:"30 時制類比時鐘，從 6 點排到 29 點",start:"6:00 一天開始",end:"30:00 一天結束",h2:"換算",lReal:"現實時間",l30:"30 時制",note:"規則：現實時間早於 6:00 時，小時加 24，日期算前一天。",err:"輸入 0:00 到 29:59 之間的時間，例如 26:15。",tzl:"時區",local:"裝置時區",
+day:function(m,d,w){return m+"/"+d+"（"+"日一二三四五六"[w]+"）的一天"},
+real:function(z){return "現實時間 "+z.month+"/"+z.day+" "+hms(z)},
+r1:function(h,m,pv){return "30 時制："+p(h)+":"+p(m)+(pv?"（算前一天）":"")},
+r2:function(h,m,nx){return "現實時間："+(nx?"隔天 ":"")+p(h)+":"+p(m)}},
+cn:{lc:"zh-Hans",title:"30 小时制时钟",lead:"日本常见的深夜写法：凌晨 0–5 点写成 24–29 点，仍算前一天。",aria:"30 小时制模拟时钟，从 6 点排到 29 点",start:"6:00 一天开始",end:"30:00 一天结束",h2:"换算",lReal:"现实时间",l30:"30 小时制",note:"规则：现实时间早于 6:00 时，小时加 24，日期算前一天。",err:"输入 0:00 到 29:59 之间的时间，例如 26:15。",tzl:"时区",local:"设备时区",
+day:function(m,d,w){return m+"/"+d+"（"+"日一二三四五六"[w]+"）的一天"},
+real:function(z){return "现实时间 "+z.month+"/"+z.day+" "+hms(z)},
+r1:function(h,m,pv){return "30 小时制："+p(h)+":"+p(m)+(pv?"（算前一天）":"")},
+r2:function(h,m,nx){return "现实时间："+(nx?"次日 ":"")+p(h)+":"+p(m)}},
+en:{lc:"en",title:"30-Hour Clock",lead:"The Japanese late-night convention: 0:00–5:59 AM is written as 24–29 and still counts as the previous day.",aria:"30-hour analog clock, hours 6 to 29",start:"6:00 day starts",end:"30:00 day ends",h2:"Convert",lReal:"Real time",l30:"30-hour",note:"Rule: before 6:00 AM, add 24 to the hour and count it as the previous day.",err:"Enter a time from 0:00 to 29:59, e.g. 26:15.",tzl:"Time zone",local:"Device time zone",
+day:function(m,d,w){return "Day of "+["Sun","Mon","Tue","Wed","Thu","Fri","Sat"][w]+" "+m+"/"+d},
+real:function(z){return "Real time "+z.month+"/"+z.day+" "+hms(z)},
+r1:function(h,m,pv){return "30-hour: "+p(h)+":"+p(m)+(pv?" (previous day)":"")},
+r2:function(h,m,nx){return "Real time: "+(nx?"next day ":"")+p(h)+":"+p(m)}},
+ru:{lc:"ru",title:"30-часовые часы",lead:"Японская ночная запись: время с 0:00 до 5:59 записывается как 24–29 и относится к предыдущему дню.",aria:"Аналоговые 30-часовые часы, часы от 6 до 29",start:"6:00 начало дня",end:"30:00 конец дня",h2:"Конвертер",lReal:"Реальное время",l30:"30-часовой формат",note:"Правило: до 6:00 утра к часам добавляется 24, а день считается предыдущим.",err:"Введите время от 0:00 до 29:59, например 26:15.",tzl:"Часовой пояс",local:"Часовой пояс устройства",
+day:function(m,d,w){return "Сутки: "+["вс","пн","вт","ср","чт","пт","сб"][w]+", "+p(d)+"."+p(m)},
+real:function(z){return "Реальное время "+p(z.day)+"."+p(z.month)+" "+hms(z)},
+r1:function(h,m,pv){return "30-часовой формат: "+p(h)+":"+p(m)+(pv?" (предыдущий день)":"")},
+r2:function(h,m,nx){return "Реальное время: "+(nx?"следующий день ":"")+p(h)+":"+p(m)}},
+de:{lc:"de",title:"30-Stunden-Uhr",lead:"Die japanische Nachtschreibweise: 0:00–5:59 Uhr wird als 24–29 geschrieben und zählt noch zum Vortag.",aria:"Analoge 30-Stunden-Uhr, Stunden 6 bis 29",start:"6:00 Tagesbeginn",end:"30:00 Tagesende",h2:"Umrechnen",lReal:"Echte Zeit",l30:"30-Stunden",note:"Regel: Vor 6:00 Uhr wird 24 zur Stunde addiert, und der Tag zählt als Vortag.",err:"Gib eine Zeit zwischen 0:00 und 29:59 ein, z. B. 26:15.",tzl:"Zeitzone",local:"Gerätezeitzone",
+day:function(m,d,w){return "Tag: "+["So","Mo","Di","Mi","Do","Fr","Sa"][w]+", "+d+"."+m+"."},
+real:function(z){return "Echte Zeit "+z.day+"."+z.month+". "+hms(z)},
+r1:function(h,m,pv){return "30-Stunden: "+p(h)+":"+p(m)+(pv?" (Vortag)":"")},
+r2:function(h,m,nx){return "Echte Zeit: "+(nx?"nächster Tag ":"")+p(h)+":"+p(m)}},
+ja:{lc:"ja",title:"30時間制時計",lead:"日本の深夜表記：午前0〜5時を24〜29時と書き、前日として扱います。",aria:"30時間制アナログ時計、6時から29時まで",start:"6:00 一日の始まり",end:"30:00 一日の終わり",h2:"変換",lReal:"現実の時刻",l30:"30時間制",note:"ルール：午前6時より前は、時に24を足し、日付は前日として数えます。",err:"0:00〜29:59の時刻を入力してください（例：26:15）。",tzl:"タイムゾーン",local:"端末のタイムゾーン",
+day:function(m,d,w){return m+"/"+d+"（"+"日月火水木金土"[w]+"）の一日"},
+real:function(z){return "現実の時刻 "+z.month+"/"+z.day+" "+hms(z)},
+r1:function(h,m,pv){return "30時間制："+p(h)+":"+p(m)+(pv?"（前日扱い）":"")},
+r2:function(h,m,nx){return "現実の時刻："+(nx?"翌日 ":"")+p(h)+":"+p(m)}},
+ko:{lc:"ko",title:"30시간제 시계",lead:"일본의 심야 표기법: 오전 0~5시를 24~29시로 쓰며, 전날로 계산합니다.",aria:"30시간제 아날로그 시계, 6시부터 29시까지",start:"6:00 하루 시작",end:"30:00 하루 끝",h2:"변환",lReal:"실제 시간",l30:"30시간제",note:"규칙: 오전 6시 이전에는 시에 24를 더하고 날짜는 전날로 계산합니다.",err:"0:00~29:59 사이의 시간을 입력하세요. 예: 26:15",tzl:"시간대",local:"기기 시간대",
+day:function(m,d,w){return m+"/"+d+"("+"일월화수목금토"[w]+")의 하루"},
+real:function(z){return "실제 시간 "+z.month+"/"+z.day+" "+hms(z)},
+r1:function(h,m,pv){return "30시간제: "+p(h)+":"+p(m)+(pv?" (전날)":"")},
+r2:function(h,m,nx){return "실제 시간: "+(nx?"다음 날 ":"")+p(h)+":"+p(m)}},
+id:{lc:"id",title:"Jam Sistem 30 Jam",lead:"Penulisan malam hari ala Jepang: pukul 0:00–5:59 dini hari ditulis sebagai 24–29 dan masih dihitung sebagai hari sebelumnya.",aria:"Jam analog 30 jam, jam 6 sampai 29",start:"6:00 awal hari",end:"30:00 akhir hari",h2:"Konversi",lReal:"Waktu nyata",l30:"Format 30 jam",note:"Aturan: sebelum pukul 6:00, tambahkan 24 pada jam dan hitung sebagai hari sebelumnya.",err:"Masukkan waktu antara 0:00 dan 29:59, mis. 26:15.",tzl:"Zona waktu",local:"Zona waktu perangkat",
+day:function(m,d,w){return "Hari: "+["Min","Sen","Sel","Rab","Kam","Jum","Sab"][w]+", "+d+"/"+m},
+real:function(z){return "Waktu nyata "+z.day+"/"+z.month+" "+hms(z)},
+r1:function(h,m,pv){return "Format 30 jam: "+p(h)+":"+p(m)+(pv?" (hari sebelumnya)":"")},
+r2:function(h,m,nx){return "Waktu nyata: "+(nx?"hari berikutnya ":"")+p(h)+":"+p(m)}},
+fr:{lc:"fr",title:"Horloge à 30 heures",lead:"La notation nocturne japonaise : de 0 h à 5 h 59, l’heure s’écrit 24–29 et compte encore pour la veille.",aria:"Horloge analogique à 30 heures, de 6 à 29",start:"6:00 début du jour",end:"30:00 fin du jour",h2:"Conversion",lReal:"Heure réelle",l30:"Format 30 h",note:"Règle : avant 6 h du matin, on ajoute 24 à l’heure et le jour compte pour la veille.",err:"Saisissez une heure entre 0:00 et 29:59, par ex. 26:15.",tzl:"Fuseau horaire",local:"Fuseau de l’appareil",
+day:function(m,d,w){return "Jour : "+["dim.","lun.","mar.","mer.","jeu.","ven.","sam."][w]+" "+d+"/"+m},
+real:function(z){return "Heure réelle "+z.day+"/"+z.month+" "+hms(z)},
+r1:function(h,m,pv){return "Format 30 h : "+p(h)+":"+p(m)+(pv?" (veille)":"")},
+r2:function(h,m,nx){return "Heure réelle : "+(nx?"lendemain ":"")+p(h)+":"+p(m)}},
+pl:{lc:"pl",title:"Zegar 30-godzinny",lead:"Japoński zapis nocny: godziny 0:00–5:59 zapisuje się jako 24–29 i wciąż należą do poprzedniego dnia.",aria:"Analogowy zegar 30-godzinny, godziny od 6 do 29",start:"6:00 początek dnia",end:"30:00 koniec dnia",h2:"Przelicznik",lReal:"Czas rzeczywisty",l30:"Format 30-godz.",note:"Zasada: przed godziną 6:00 dodaj 24 do godziny, a dzień liczy się jako poprzedni.",err:"Wpisz czas od 0:00 do 29:59, np. 26:15.",tzl:"Strefa czasowa",local:"Strefa czasowa urządzenia",
+day:function(m,d,w){return "Dzień: "+["niedz.","pon.","wt.","śr.","czw.","pt.","sob."][w]+" "+d+"."+m+"."},
+real:function(z){return "Czas rzeczywisty "+z.day+"."+z.month+". "+hms(z)},
+r1:function(h,m,pv){return "Format 30-godz.: "+p(h)+":"+p(m)+(pv?" (poprzedni dzień)":"")},
+r2:function(h,m,nx){return "Czas rzeczywisty: "+(nx?"następny dzień ":"")+p(h)+":"+p(m)}},
+la:{lc:"la",title:"Horologium triginta horarum",lead:"Mos Iaponicus nocturnus: horae 0:00–5:59 ut 24–29 scribuntur et adhuc ad pristinum diem pertinent.",aria:"Horologium analogum triginta horarum, ab hora 6 ad 29",start:"6:00 initium diei",end:"30:00 finis diei",h2:"Conversio",lReal:"Tempus verum",l30:"Forma XXX horarum",note:"Regula: ante horam 6:00 ad horam adde 24, et dies pro pristino habetur.",err:"Tempus inter 0:00 et 29:59 inscribe, e.g. 26:15.",tzl:"Zona horaria",local:"Zona horaria instrumenti",
+day:function(m,d,w){return "Dies: "+["Sol.","Lun.","Mart.","Merc.","Iov.","Ven.","Sat."][w]+" "+d+"."+m+"."},
+real:function(z){return "Tempus verum "+z.day+"."+z.month+". "+hms(z)},
+r1:function(h,m,pv){return "Forma XXX horarum: "+p(h)+":"+p(m)+(pv?" (dies prior)":"")},
+r2:function(h,m,nx){return "Tempus verum: "+(nx?"dies sequens ":"")+p(h)+":"+p(m)}},
+ar:{lc:"ar",dir:"rtl",title:"ساعة الـ30 ساعة",lead:"طريقة الكتابة الليلية اليابانية: الساعات من 0:00 إلى 5:59 فجرًا تُكتب 24–29 وتُحسب ضمن اليوم السابق.",aria:"ساعة تناظرية بنظام 30 ساعة، من الساعة 6 إلى 29",start:"6:00 بداية اليوم",end:"30:00 نهاية اليوم",h2:"التحويل",lReal:"الوقت الفعلي",l30:"نظام 30 ساعة",note:"القاعدة: قبل الساعة 6:00 صباحًا أضف 24 إلى الساعة، ويُحسب اليوم على أنه اليوم السابق.",err:"أدخل وقتًا بين 0:00 و29:59، مثل 26:15.",tzl:"المنطقة الزمنية",local:"المنطقة الزمنية للجهاز",
+day:function(m,d,w){return "اليوم: "+["الأحد","الاثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"][w]+" "+d+"/"+m},
+real:function(z){return "الوقت الفعلي "+z.day+"/"+z.month+" "+hms(z)},
+r1:function(h,m,pv){return "نظام 30 ساعة: "+p(h)+":"+p(m)+(pv?" (اليوم السابق)":"")},
+r2:function(h,m,nx){return "الوقت الفعلي: "+(nx?"اليوم التالي ":"")+p(h)+":"+p(m)}}
+};
+var TH={zh:"切換深色／淺色模式",cn:"切换深色/浅色模式",en:"Switch dark/light mode",ru:"Тёмная/светлая тема",de:"Dunkel/Hell umschalten",ja:"ダーク/ライト切替",ko:"다크/라이트 전환",id:"Ganti mode gelap/terang",fr:"Mode sombre/clair",pl:"Tryb ciemny/jasny",la:"Modus obscurus/lucidus",ar:"تبديل الوضع الداكن/الفاتح"};
+function curDark(){var t=document.documentElement.getAttribute("data-theme");return t?t==="dark":matchMedia("(prefers-color-scheme: dark)").matches}
+function icon(){var b=document.getElementById("theme");b.textContent=curDark()?"☀":"☾";b.setAttribute("aria-label",TH[L]);b.title=TH[L]}
+function setTheme(t){document.documentElement.setAttribute("data-theme",t);try{localStorage.setItem("theme",t)}catch(x){}icon()}
+var L="zh",TZ="";
+function zt(date){var u=TZ!=="",d=u?new Date(date.getTime()+TZ*60000):date;
+return u?{year:d.getUTCFullYear(),month:d.getUTCMonth()+1,day:d.getUTCDate(),hour:d.getUTCHours(),minute:d.getUTCMinutes(),second:d.getUTCSeconds()}:{year:d.getFullYear(),month:d.getMonth()+1,day:d.getDate(),hour:d.getHours(),minute:d.getMinutes(),second:d.getSeconds()}}
+
+var NS="http://www.w3.org/2000/svg",g=document.getElementById("ticks");
+function pt(r,d){var a=d*Math.PI/180;return[150+Math.sin(a)*r,150-Math.cos(a)*r]}
+var a0=pt(118,270),a1=pt(118,359.9);
+document.getElementById("night").setAttribute("d","M"+a0[0]+" "+a0[1]+" A118 118 0 0 1 "+a1[0]+" "+a1[1]);
+for(var i=0;i<24;i++){var d=i*15,h=6+i,n=h>=24;
+var p1=pt(131,d),p2=pt(139,d),l=document.createElementNS(NS,"line");
+l.setAttribute("x1",p1[0]);l.setAttribute("y1",p1[1]);l.setAttribute("x2",p2[0]);l.setAttribute("y2",p2[1]);
+l.setAttribute("stroke","var(--sub)");l.setAttribute("stroke-width","1.5");g.appendChild(l);
+var q=pt(118,d),t=document.createElementNS(NS,"text");
+t.setAttribute("x",q[0]);t.setAttribute("y",q[1]+5);t.setAttribute("text-anchor","middle");
+t.setAttribute("font-size","15");t.setAttribute("font-weight",n?"600":"500");
+t.setAttribute("fill",n?"var(--nightink)":"var(--ink)");t.setAttribute("class","dn");
+t.textContent=h;g.appendChild(t)}
+
+function tick(){var n=new Date(),z=zt(n),s=z.hour*3600+z.minute*60+z.second+n.getMilliseconds()/1000;
+var early=s<21600,sh=early?s+86400:s,bd=new Date(Date.UTC(z.year,z.month-1,z.day-(early?1:0)));
+var H=Math.floor(sh/3600),M=Math.floor(sh%3600/60),S=Math.floor(sh%60);
+document.getElementById("hH").setAttribute("transform","rotate("+((sh-21600)/86400*360)+" 150 150)");
+document.getElementById("hM").setAttribute("transform","rotate("+((sh%3600)/3600*360)+" 150 150)");
+document.getElementById("hS").setAttribute("transform","rotate("+((sh%60)/60*360)+" 150 150)");
+document.getElementById("big").textContent=p(H)+":"+p(M)+":"+p(S);
+document.getElementById("day").textContent=T[L].day(bd.getUTCMonth()+1,bd.getUTCDate(),bd.getUTCDay());
+document.getElementById("real").textContent=T[L].real(z);
+document.getElementById("bar").style.width=Math.round((sh-21600)/86400*1000)/10+"%";
+}
+
+function c1(){
+var o=document.getElementById("out1"),v=document.getElementById("inReal").value;o.className="out";
+if(!v){o.textContent="";return}
+var a=v.split(":"),h=+a[0],m=+a[1];
+o.textContent=T[L].r1(h<6?h+24:h,m,h<6)}
+function c2(){
+var o=document.getElementById("out2"),v=document.getElementById("in30").value.trim();o.className="out";
+if(!v){o.textContent="";return}
+var m=/^(\d{1,2}):?(\d{2})$/.exec(v);
+if(!m||+m[2]>59||+m[1]>29){o.className="out err";o.textContent=T[L].err;return}
+var h=+m[1],mm=+m[2];
+o.textContent=T[L].r2(h>=24?h-24:h,mm,h>=24)}
+
+function setL(l){L=l;document.documentElement.lang=T[l].lc;document.documentElement.dir=T[l].dir||"ltr";document.title=T[l].title;
+var e=document.querySelectorAll("[data-i]");for(var k=0;k<e.length;k++)e[k].textContent=T[l][e[k].getAttribute("data-i")];
+document.querySelector(".dial").setAttribute("aria-label",T[l].aria);
+document.getElementById("tz").setAttribute("aria-label",T[l].tzl);
+document.getElementById("lang").value=l;icon();
+try{localStorage.setItem("lang",l)}catch(x){}
+relab();c1();c2();tick()}
+function setTZ(z){TZ=z===""?"":z.split("|")[0];document.getElementById("tz").value=z;try{localStorage.setItem("tz",z)}catch(x){}tick()}
+
+document.getElementById("inReal").addEventListener("input",c1);
+document.getElementById("in30").addEventListener("input",c2);
+document.getElementById("lang").addEventListener("change",function(){setL(this.value)});
+document.getElementById("tz").addEventListener("change",function(){setTZ(this.value)});
+var CITY=[[-720,"Baker Island"],[-660,"Pago Pago"],[-600,"Honolulu|Papeete"],[-570,"Taiohae"],[-540,"Anchorage"],[-480,"Los Angeles|Vancouver|Tijuana"],[-420,"Denver|Phoenix|Calgary"],[-360,"Chicago|Mexico City|Winnipeg"],[-300,"New York|Toronto|Bogot\u00e1|Lima"],[-240,"Halifax|Caracas|La Paz|Santiago"],[-210,"St. John\u2019s"],[-180,"S\u00e3o Paulo|Buenos Aires|Montevideo"],[-120,"Fernando de Noronha"],[-60,"Azores|Praia"],[0,"London|Lisbon|Reykjavik|Accra"],[60,"Berlin|Paris|Rome|Madrid|Lagos"],[120,"Athens|Cairo|Helsinki|Johannesburg|Kaliningrad"],[180,"Moscow|Saint Petersburg|Kazan|Istanbul|Riyadh|Nairobi"],[210,"Tehran"],[240,"Dubai|Baku|Muscat|Samara"],[270,"Kabul"],[300,"Karachi|Tashkent|Mal\u00e9|Yekaterinburg"],[330,"Mumbai|Delhi|Colombo"],[345,"Kathmandu"],[360,"Dhaka|Thimphu|Omsk"],[390,"Yangon"],[420,"Bangkok|Jakarta|Hanoi|Novosibirsk|Krasnoyarsk"],[480,"Beijing|Taipei|Hong Kong|Singapore|Kuala Lumpur|Manila|Perth|Irkutsk"],[525,"Eucla"],[540,"Tokyo|Seoul|Pyongyang|Yakutsk"],[570,"Adelaide|Darwin"],[600,"Sydney|Brisbane|Vladivostok"],[630,"Lord Howe Island"],[660,"Honiara|Noum\u00e9a|Magadan"],[720,"Auckland|Suva|Petropavlovsk-Kamchatsky"],[765,"Chatham Islands"],[780,"Nuku\u02bbalofa|Apia"],[840,"Kiritimati"]];
+var NMS={
+zh:"Baker Island=貝克島;Pago Pago=帕果帕果;Honolulu=檀香山;Papeete=帕皮提;Anchorage=安克拉治;Los Angeles=洛杉磯;Vancouver=溫哥華;Tijuana=蒂華納;Denver=丹佛;Phoenix=鳳凰城;Calgary=卡加利;Chicago=芝加哥;Mexico City=墨西哥城;Winnipeg=溫尼伯;New York=紐約;Toronto=多倫多;Bogotá=波哥大;Lima=利馬;Halifax=哈利法克斯;Caracas=卡拉卡斯;La Paz=拉巴斯;Santiago=聖地牙哥;St. John’s=聖約翰斯;São Paulo=聖保羅;Buenos Aires=布宜諾斯艾利斯;Montevideo=蒙特維多;Azores=亞速爾群島;Praia=普拉亞;London=倫敦;Lisbon=里斯本;Reykjavik=雷克雅維克;Accra=阿克拉;Berlin=柏林;Paris=巴黎;Rome=羅馬;Madrid=馬德里;Lagos=拉哥斯;Athens=雅典;Cairo=開羅;Helsinki=赫爾辛基;Johannesburg=約翰尼斯堡;Kaliningrad=加里寧格勒;Moscow=莫斯科;Saint Petersburg=聖彼得堡;Kazan=喀山;Istanbul=伊斯坦堡;Riyadh=利雅德;Nairobi=奈洛比;Tehran=德黑蘭;Dubai=杜拜;Baku=巴庫;Muscat=馬斯喀特;Samara=薩馬拉;Kabul=喀布爾;Karachi=喀拉蚩;Tashkent=塔什干;Malé=馬列;Yekaterinburg=葉卡捷琳堡;Mumbai=孟買;Delhi=德里;Colombo=可倫坡;Kathmandu=加德滿都;Dhaka=達卡;Thimphu=廷布;Omsk=鄂木斯克;Yangon=仰光;Bangkok=曼谷;Jakarta=雅加達;Hanoi=河內;Novosibirsk=新西伯利亞;Krasnoyarsk=克拉斯諾亞爾斯克;Beijing=北京;Taipei=台北;Hong Kong=香港;Singapore=新加坡;Kuala Lumpur=吉隆坡;Manila=馬尼拉;Perth=伯斯;Irkutsk=伊爾庫茨克;Tokyo=東京;Seoul=首爾;Pyongyang=平壤;Yakutsk=雅庫茨克;Adelaide=阿德萊德;Darwin=達爾文;Sydney=雪梨;Brisbane=布里斯本;Vladivostok=海參崴;Honiara=荷尼阿拉;Nouméa=努美阿;Magadan=馬加丹;Auckland=奧克蘭;Suva=蘇瓦;Petropavlovsk-Kamchatsky=堪察加彼得羅巴甫洛夫斯克;Apia=阿皮亞;Kiritimati=基里蒂馬蒂（聖誕島）;Taiohae=塔伊奧哈埃;Fernando de Noronha=費爾南多·迪諾羅尼亞;Eucla=尤克拉;Lord Howe Island=豪勳爵島;Chatham Islands=查塔姆群島;Nukuʻalofa=努庫阿洛法",
+cn:"Baker Island=贝克岛;Pago Pago=帕果帕果;Honolulu=火奴鲁鲁;Papeete=帕皮提;Anchorage=安克雷奇;Los Angeles=洛杉矶;Vancouver=温哥华;Tijuana=蒂华纳;Denver=丹佛;Phoenix=凤凰城;Calgary=卡尔加里;Chicago=芝加哥;Mexico City=墨西哥城;Winnipeg=温尼伯;New York=纽约;Toronto=多伦多;Bogotá=波哥大;Lima=利马;Halifax=哈利法克斯;Caracas=加拉加斯;La Paz=拉巴斯;Santiago=圣地亚哥;St. John’s=圣约翰斯;São Paulo=圣保罗;Buenos Aires=布宜诺斯艾利斯;Montevideo=蒙得维的亚;Azores=亚速尔群岛;Praia=普拉亚;London=伦敦;Lisbon=里斯本;Reykjavik=雷克雅未克;Accra=阿克拉;Berlin=柏林;Paris=巴黎;Rome=罗马;Madrid=马德里;Lagos=拉各斯;Athens=雅典;Cairo=开罗;Helsinki=赫尔辛基;Johannesburg=约翰内斯堡;Kaliningrad=加里宁格勒;Moscow=莫斯科;Saint Petersburg=圣彼得堡;Kazan=喀山;Istanbul=伊斯坦布尔;Riyadh=利雅得;Nairobi=内罗毕;Tehran=德黑兰;Dubai=迪拜;Baku=巴库;Muscat=马斯喀特;Samara=萨马拉;Kabul=喀布尔;Karachi=卡拉奇;Tashkent=塔什干;Malé=马累;Yekaterinburg=叶卡捷琳堡;Mumbai=孟买;Delhi=德里;Colombo=科伦坡;Kathmandu=加德满都;Dhaka=达卡;Thimphu=廷布;Omsk=鄂木斯克;Yangon=仰光;Bangkok=曼谷;Jakarta=雅加达;Hanoi=河内;Novosibirsk=新西伯利亚;Krasnoyarsk=克拉斯诺亚尔斯克;Beijing=北京;Taipei=台北;Hong Kong=香港;Singapore=新加坡;Kuala Lumpur=吉隆坡;Manila=马尼拉;Perth=珀斯;Irkutsk=伊尔库茨克;Tokyo=东京;Seoul=首尔;Pyongyang=平壤;Yakutsk=雅库茨克;Adelaide=阿德莱德;Darwin=达尔文;Sydney=悉尼;Brisbane=布里斯班;Vladivostok=符拉迪沃斯托克;Honiara=霍尼亚拉;Nouméa=努美阿;Magadan=马加丹;Auckland=奥克兰;Suva=苏瓦;Petropavlovsk-Kamchatsky=堪察加彼得罗巴甫洛夫斯克;Apia=阿皮亚;Kiritimati=基里蒂马蒂（圣诞岛）;Taiohae=塔伊奥哈埃;Fernando de Noronha=费尔南多-迪诺罗尼亚;Eucla=尤克拉;Lord Howe Island=豪勋爵岛;Chatham Islands=查塔姆群岛;Nukuʻalofa=努库阿洛法",
+ja:"Baker Island=ベーカー島;Pago Pago=パゴパゴ;Honolulu=ホノルル;Papeete=パペーテ;Anchorage=アンカレッジ;Los Angeles=ロサンゼルス;Vancouver=バンクーバー;Tijuana=ティファナ;Denver=デンバー;Phoenix=フェニックス;Calgary=カルガリー;Chicago=シカゴ;Mexico City=メキシコシティ;Winnipeg=ウィニペグ;New York=ニューヨーク;Toronto=トロント;Bogotá=ボゴタ;Lima=リマ;Halifax=ハリファックス;Caracas=カラカス;La Paz=ラパス;Santiago=サンティアゴ;St. John’s=セントジョンズ;São Paulo=サンパウロ;Buenos Aires=ブエノスアイレス;Montevideo=モンテビデオ;Azores=アゾレス諸島;Praia=プライア;London=ロンドン;Lisbon=リスボン;Reykjavik=レイキャビク;Accra=アクラ;Berlin=ベルリン;Paris=パリ;Rome=ローマ;Madrid=マドリード;Lagos=ラゴス;Athens=アテネ;Cairo=カイロ;Helsinki=ヘルシンキ;Johannesburg=ヨハネスブルグ;Kaliningrad=カリーニングラード;Moscow=モスクワ;Saint Petersburg=サンクトペテルブルク;Kazan=カザン;Istanbul=イスタンブール;Riyadh=リヤド;Nairobi=ナイロビ;Tehran=テヘラン;Dubai=ドバイ;Baku=バクー;Muscat=マスカット;Samara=サマーラ;Kabul=カブール;Karachi=カラチ;Tashkent=タシケント;Malé=マレ;Yekaterinburg=エカテリンブルク;Mumbai=ムンバイ;Delhi=デリー;Colombo=コロンボ;Kathmandu=カトマンズ;Dhaka=ダッカ;Thimphu=ティンプー;Omsk=オムスク;Yangon=ヤンゴン;Bangkok=バンコク;Jakarta=ジャカルタ;Hanoi=ハノイ;Novosibirsk=ノヴォシビルスク;Krasnoyarsk=クラスノヤルスク;Beijing=北京;Taipei=台北;Hong Kong=香港;Singapore=シンガポール;Kuala Lumpur=クアラルンプール;Manila=マニラ;Perth=パース;Irkutsk=イルクーツク;Tokyo=東京;Seoul=ソウル;Pyongyang=平壌;Yakutsk=ヤクーツク;Adelaide=アデレード;Darwin=ダーウィン;Sydney=シドニー;Brisbane=ブリスベン;Vladivostok=ウラジオストク;Honiara=ホニアラ;Nouméa=ヌーメア;Magadan=マガダン;Auckland=オークランド;Suva=スバ;Petropavlovsk-Kamchatsky=ペトロパブロフスク・カムチャツキー;Apia=アピア",
+ko:"Baker Island=베이커 섬;Pago Pago=파고파고;Honolulu=호놀룰루;Papeete=파페에테;Anchorage=앵커리지;Los Angeles=로스앤젤레스;Vancouver=밴쿠버;Tijuana=티후아나;Denver=덴버;Phoenix=피닉스;Calgary=캘거리;Chicago=시카고;Mexico City=멕시코시티;Winnipeg=위니펙;New York=뉴욕;Toronto=토론토;Bogotá=보고타;Lima=리마;Halifax=핼리팩스;Caracas=카라카스;La Paz=라파스;Santiago=산티아고;St. John’s=세인트존스;São Paulo=상파울루;Buenos Aires=부에노스아이레스;Montevideo=몬테비데오;Azores=아조레스;Praia=프라이아;London=런던;Lisbon=리스본;Reykjavik=레이캬비크;Accra=아크라;Berlin=베를린;Paris=파리;Rome=로마;Madrid=마드리드;Lagos=라고스;Athens=아테네;Cairo=카이로;Helsinki=헬싱키;Johannesburg=요하네스버그;Kaliningrad=칼리닌그라드;Moscow=모스크바;Saint Petersburg=상트페테르부르크;Kazan=카잔;Istanbul=이스탄불;Riyadh=리야드;Nairobi=나이로비;Tehran=테헤란;Dubai=두바이;Baku=바쿠;Muscat=무스카트;Samara=사마라;Kabul=카불;Karachi=카라치;Tashkent=타슈켄트;Malé=말레;Yekaterinburg=예카테린부르크;Mumbai=뭄바이;Delhi=델리;Colombo=콜롬보;Kathmandu=카트만두;Dhaka=다카;Thimphu=팀푸;Omsk=옴스크;Yangon=양곤;Bangkok=방콕;Jakarta=자카르타;Hanoi=하노이;Novosibirsk=노보시비르스크;Krasnoyarsk=크라스노야르스크;Beijing=베이징;Taipei=타이베이;Hong Kong=홍콩;Singapore=싱가포르;Kuala Lumpur=쿠알라룸푸르;Manila=마닐라;Perth=퍼스;Irkutsk=이르쿠츠크;Tokyo=도쿄;Seoul=서울;Pyongyang=평양;Yakutsk=야쿠츠크;Adelaide=애들레이드;Darwin=다윈;Sydney=시드니;Brisbane=브리즈번;Vladivostok=블라디보스토크;Honiara=호니아라;Nouméa=누메아;Magadan=마가단;Auckland=오클랜드;Suva=수바;Petropavlovsk-Kamchatsky=페트로파블롭스크캄차츠키;Apia=아피아",
+ru:"Baker Island=Остров Бейкер;Pago Pago=Паго-Паго;Honolulu=Гонолулу;Papeete=Папеэте;Anchorage=Анкоридж;Los Angeles=Лос-Анджелес;Vancouver=Ванкувер;Tijuana=Тихуана;Denver=Денвер;Phoenix=Финикс;Calgary=Калгари;Chicago=Чикаго;Mexico City=Мехико;Winnipeg=Виннипег;New York=Нью-Йорк;Toronto=Торонто;Bogotá=Богота;Lima=Лима;Halifax=Галифакс;Caracas=Каракас;La Paz=Ла-Пас;Santiago=Сантьяго;St. John’s=Сент-Джонс;São Paulo=Сан-Паулу;Buenos Aires=Буэнос-Айрес;Montevideo=Монтевидео;Azores=Азорские острова;Praia=Прая;London=Лондон;Lisbon=Лиссабон;Reykjavik=Рейкьявик;Accra=Аккра;Berlin=Берлин;Paris=Париж;Rome=Рим;Madrid=Мадрид;Lagos=Лагос;Athens=Афины;Cairo=Каир;Helsinki=Хельсинки;Johannesburg=Йоханнесбург;Kaliningrad=Калининград;Moscow=Москва;Saint Petersburg=Санкт-Петербург;Kazan=Казань;Istanbul=Стамбул;Riyadh=Эр-Рияд;Nairobi=Найроби;Tehran=Тегеран;Dubai=Дубай;Baku=Баку;Muscat=Маскат;Samara=Самара;Kabul=Кабул;Karachi=Карачи;Tashkent=Ташкент;Malé=Мале;Yekaterinburg=Екатеринбург;Mumbai=Мумбаи;Delhi=Дели;Colombo=Коломбо;Kathmandu=Катманду;Dhaka=Дакка;Thimphu=Тхимпху;Omsk=Омск;Yangon=Янгон;Bangkok=Бангкок;Jakarta=Джакарта;Hanoi=Ханой;Novosibirsk=Новосибирск;Krasnoyarsk=Красноярск;Beijing=Пекин;Taipei=Тайбэй;Hong Kong=Гонконг;Singapore=Сингапур;Kuala Lumpur=Куала-Лумпур;Manila=Манила;Perth=Перт;Irkutsk=Иркутск;Tokyo=Токио;Seoul=Сеул;Pyongyang=Пхеньян;Yakutsk=Якутск;Adelaide=Аделаида;Darwin=Дарвин;Sydney=Сидней;Brisbane=Брисбен;Vladivostok=Владивосток;Honiara=Хониара;Nouméa=Нумеа;Magadan=Магадан;Auckland=Окленд;Suva=Сува;Petropavlovsk-Kamchatsky=Петропавловск-Камчатский;Apia=Апиа;Chatham Islands=Острова Чатем;Lord Howe Island=Остров Лорд-Хау;Eucla=Юкла",
+ar:"Honolulu=هونولولو;Anchorage=أنكوراج;Los Angeles=لوس أنجلوس;Vancouver=فانكوفر;Tijuana=تيخوانا;Denver=دنفر;Phoenix=فينيكس;Calgary=كالغاري;Chicago=شيكاغو;Mexico City=مكسيكو سيتي;Winnipeg=وينيبيغ;New York=نيويورك;Toronto=تورونتو;Bogotá=بوغوتا;Lima=ليما;Halifax=هاليفاكس;Caracas=كاراكاس;La Paz=لاباز;Santiago=سانتياغو;São Paulo=ساو باولو;Buenos Aires=بوينس آيرس;Montevideo=مونتيفيديو;London=لندن;Lisbon=لشبونة;Reykjavik=ريكيافيك;Accra=أكرا;Berlin=برلين;Paris=باريس;Rome=روما;Madrid=مدريد;Lagos=لاغوس;Athens=أثينا;Cairo=القاهرة;Helsinki=هلسنكي;Johannesburg=جوهانسبرغ;Kaliningrad=كالينينغراد;Moscow=موسكو;Saint Petersburg=سانت بطرسبرغ;Kazan=قازان;Istanbul=إسطنبول;Riyadh=الرياض;Nairobi=نيروبي;Tehran=طهران;Dubai=دبي;Baku=باكو;Muscat=مسقط;Samara=سامارا;Kabul=كابول;Karachi=كراتشي;Tashkent=طشقند;Malé=ماليه;Yekaterinburg=يكاترينبورغ;Mumbai=مومباي;Delhi=دلهي;Colombo=كولومبو;Kathmandu=كاتماندو;Dhaka=دكا;Thimphu=تيمفو;Omsk=أومسك;Yangon=يانغون;Bangkok=بانكوك;Jakarta=جاكرتا;Hanoi=هانوي;Novosibirsk=نوفوسيبيرسك;Krasnoyarsk=كراسنويارسك;Beijing=بكين;Taipei=تايبيه;Hong Kong=هونغ كونغ;Singapore=سنغافورة;Kuala Lumpur=كوالالمبور;Manila=مانيلا;Perth=بيرث;Irkutsk=إيركوتسك;Tokyo=طوكيو;Seoul=سيئول;Pyongyang=بيونغ يانغ;Yakutsk=ياقوتسك;Adelaide=أديلايد;Darwin=داروين;Sydney=سيدني;Brisbane=بريسبان;Vladivostok=فلاديفوستوك;Magadan=ماغادان;Auckland=أوكلاند;Suva=سوفا;Petropavlovsk-Kamchatsky=بتروبافلوفسك كامتشاتسكي;Apia=آبيا;Pago Pago=باغو باغو;Papeete=بابيتي;Praia=برايا",
+de:"Mexico City=Mexiko-Stadt;Lisbon=Lissabon;Rome=Rom;Athens=Athen;Cairo=Kairo;Moscow=Moskau;Saint Petersburg=Sankt Petersburg;Riyadh=Riad;Tehran=Teheran;Muscat=Maskat;Beijing=Peking;Taipei=Taipeh;Hong Kong=Hongkong;Singapore=Singapur;Pyongyang=Pjöngjang;Tokyo=Tokio;Vladivostok=Wladiwostok;Yekaterinburg=Jekaterinburg;Novosibirsk=Nowosibirsk;Krasnoyarsk=Krasnojarsk;Yakutsk=Jakutsk;Kazan=Kasan;Tashkent=Taschkent;Yangon=Rangun;Azores=Azoren;Reykjavik=Reykjavík;Petropavlovsk-Kamchatsky=Petropawlowsk-Kamtschatski",
+fr:"Mexico City=Mexico;Lisbon=Lisbonne;Athens=Athènes;Cairo=Le Caire;Moscow=Moscou;Saint Petersburg=Saint-Pétersbourg;Riyadh=Riyad;Tehran=Téhéran;Muscat=Mascate;Beijing=Pékin;Singapore=Singapour;Manila=Manille;Seoul=Séoul;Hanoi=Hanoï;Yekaterinburg=Iekaterinbourg;Novosibirsk=Novossibirsk;Krasnoyarsk=Krasnoïarsk;Yakutsk=Iakoutsk;Irkutsk=Irkoutsk;Tashkent=Tachkent;Yangon=Rangoun;Kabul=Kaboul;Baku=Bakou;Dhaka=Dacca;Kathmandu=Katmandou;Azores=Açores;Johannesburg=Johannesbourg;Petropavlovsk-Kamchatsky=Petropavlovsk-Kamtchatski",
+pl:"Mexico City=Meksyk;Lisbon=Lizbona;Rome=Rzym;Athens=Ateny;Cairo=Kair;Moscow=Moskwa;Saint Petersburg=Petersburg;Istanbul=Stambuł;Riyadh=Rijad;Tehran=Teheran;Muscat=Maskat;Beijing=Pekin;Singapore=Singapur;Pyongyang=Pjongjang;Tokyo=Tokio;Vladivostok=Władywostok;Yekaterinburg=Jekaterynburg;Novosibirsk=Nowosybirsk;Krasnoyarsk=Krasnojarsk;Yakutsk=Jakuck;Kazan=Kazań;Irkutsk=Irkuck;Tashkent=Taszkent;Yangon=Rangun;Kathmandu=Katmandu;Azores=Azory;Paris=Paryż;Madrid=Madryt;Mumbai=Bombaj;Hong Kong=Hongkong;Taipei=Tajpej;Seoul=Seul;New York=Nowy Jork;London=Londyn;Adelaide=Adelajda;Petropavlovsk-Kamchatsky=Pietropawłowsk Kamczacki",
+id:"Mexico City=Kota Meksiko;Lisbon=Lisboa;Rome=Roma;Athens=Athena;Cairo=Kairo;Moscow=Moskow;Singapore=Singapura;Tehran=Teheran;Muscat=Muskat;Seoul=Seoul",
+la:"London=Londinium;Paris=Lutetia;Rome=Roma;Athens=Athenae;Berlin=Berolinum;Madrid=Matritum;Lisbon=Olisipo;Moscow=Moscua;New York=Novum Eboracum;Cairo=Cairum;Istanbul=Constantinopolis"
+};
+var NM={};for(var k in NMS){NM[k]={};NMS[k].split(";").forEach(function(x){var q=x.split("=");NM[k][q[0]]=q[1]})}
+function relab(){var os=document.getElementById("tz").options;for(var i=0;i<os.length;i++){var c=os[i].dataset.c;if(c)os[i].textContent=os[i].dataset.g+" "+((NM[L]&&NM[L][c])||c)}}
+var tzs=document.getElementById("tz");
+CITY.forEach(function(e){e[1].split("|").forEach(function(c){var m=e[0],a=Math.abs(m),h=Math.floor(a/60),mm=a%60,o=document.createElement("option");o.value=m+"|"+c;o.dataset.c=c;o.dataset.g="GMT"+(m<0?"\u2212":"+")+h+(mm?":"+p(mm):"");o.textContent=o.dataset.g+" "+c;tzs.appendChild(o)})});
+var sl="",st="";try{sl=localStorage.getItem("lang")||"";st=localStorage.getItem("tz")||""}catch(x){}
+var ok=false,os=document.getElementById("tz").options;for(var j=0;j<os.length;j++)if(os[j].value===st)ok=true;
+TZ=ok&&st?st.split("|")[0]:"";document.getElementById("tz").value=ok?st:"";
+var th="";try{th=localStorage.getItem("theme")||""}catch(x){}
+if(th==="light"||th==="dark")document.documentElement.setAttribute("data-theme",th);
+document.getElementById("theme").addEventListener("click",function(){setTheme(curDark()?"light":"dark")});
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change",icon);
+setL(T[sl]?sl:"zh");setInterval(tick,100);
+</script>
+</body>
+</html>
